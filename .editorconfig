@@ -1,0 +1,20 @@
+# CareKind AI — 格式唯一来源（见 company-os/11-rules/code-rules.md §4）
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = tab
+indent_size = 4
+tab_width = 4
+
+# YAML 语法禁止用 Tab 缩进
+[*.{yml,yaml}]
+indent_style = space
+indent_size = 2
+
+# Markdown 行尾两个空格表示换行，不自动删除
+[*.md]
+trim_trailing_whitespace = false

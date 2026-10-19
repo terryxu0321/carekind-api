@@ -1,0 +1,8 @@
+# Line endings follow .editorconfig (end_of_line = lf), regardless of each machine's core.autocrlf
+* text=auto eol=lf
+
+*.pdf binary
+*.png binary
+*.jpg binary
+*.docx binary
+*.xlsx binary
