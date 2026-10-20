@@ -1,5 +1,16 @@
 // SPEC-011 PA-02 staff register, assignments, lifecycle and credentials (staff tokens only).
-import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Post, Put, Query } from '@nestjs/common';
+import {
+	Body,
+	Controller,
+	Delete,
+	Get,
+	HttpCode,
+	Param,
+	Patch,
+	Post,
+	Put,
+	Query,
+} from '@nestjs/common';
 import {
 	type Credential,
 	type CredentialCreateRequest,
@@ -70,7 +81,10 @@ export class OrgStaffController {
 	}
 
 	@Get(routes.staff)
-	getStaff(@CurrentStaff() actor: StaffPrincipal, @Param('id', IdPipe) id: string): Promise<Staff> {
+	getStaff(
+		@CurrentStaff() actor: StaffPrincipal,
+		@Param('id', IdPipe) id: string,
+	): Promise<Staff> {
 		return this.staffService.get(actor, id);
 	}
 
@@ -87,7 +101,8 @@ export class OrgStaffController {
 	updateAssignments(
 		@CurrentStaff() actor: StaffPrincipal,
 		@Param('id', IdPipe) id: string,
-		@Body(new SchemaPipe(staffAssignmentsUpdateRequestSchema)) body: StaffAssignmentsUpdateRequest,
+		@Body(new SchemaPipe(staffAssignmentsUpdateRequestSchema))
+		body: StaffAssignmentsUpdateRequest,
 	): Promise<Staff> {
 		return this.staffService.updateAssignments(actor, id, body.assignments);
 	}

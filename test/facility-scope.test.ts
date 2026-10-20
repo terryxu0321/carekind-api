@@ -44,7 +44,10 @@ describe('facility manager (NSW 1 only)', () => {
 		for (const member of staff) {
 			expect(member.assignments.some((item) => item.facilityId === nsw1)).toBe(true);
 		}
-		await expectApiError(client.org.getStaff(requireKey(orgA.staffIds, 'adminOfficer')), 'forbidden');
+		await expectApiError(
+			client.org.getStaff(requireKey(orgA.staffIds, 'adminOfficer')),
+			'forbidden',
+		);
 	});
 
 	it('should_not_create_facilities_or_change_org_admins', async () => {

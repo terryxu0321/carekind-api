@@ -13,7 +13,13 @@ import { AuditService } from '../common/audit.service.js';
 import { DATABASE } from '../common/tokens.js';
 import type { Database } from '../db/database.js';
 import { currentPlatformDefaults } from '../db/queries.js';
-import { facilities, organisations, platformDefaults, staff, staffAssignments } from '../db/schema.js';
+import {
+	facilities,
+	organisations,
+	platformDefaults,
+	staff,
+	staffAssignments,
+} from '../db/schema.js';
 
 const LOGIN_WINDOW_DAYS = 7;
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
@@ -86,7 +92,9 @@ export class PlatformSettingsService {
 		]);
 		const staffById = new Map(staffRows.map((row) => [row.id, row]));
 		return orgRows.map((organisation): OrganisationUsage => {
-			const orgFacilities = facilityRows.filter((row) => row.organisationId === organisation.id);
+			const orgFacilities = facilityRows.filter(
+				(row) => row.organisationId === organisation.id,
+			);
 			const facilityUsage = orgFacilities.map((facility): FacilityUsage => {
 				const members = assignmentRows
 					.filter((assignment) => assignment.facilityId === facility.id)

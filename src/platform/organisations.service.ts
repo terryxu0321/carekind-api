@@ -68,7 +68,13 @@ export class OrganisationsService {
 		organisationId: Id,
 		body: OrganisationUpdateRequest,
 	): Promise<Organisation> {
-		return this.updateRow(actor, organisationId, body, 'organisation.update', 'Updated details');
+		return this.updateRow(
+			actor,
+			organisationId,
+			body,
+			'organisation.update',
+			'Updated details',
+		);
 	}
 
 	// SA-01: suspending blocks every sign-in of that organisation; data is kept, never deleted.
@@ -82,7 +88,8 @@ export class OrganisationsService {
 			throw conflict(`Organisation is already ${status}`);
 		}
 		const action = status === 'suspended' ? 'organisation.suspend' : 'organisation.reactivate';
-		const summary = status === 'suspended' ? 'Suspended organisation' : 'Reactivated organisation';
+		const summary =
+			status === 'suspended' ? 'Suspended organisation' : 'Reactivated organisation';
 		return this.updateRow(actor, organisationId, { status }, action, summary);
 	}
 
@@ -91,7 +98,13 @@ export class OrganisationsService {
 		organisationId: Id,
 		limits: OrganisationLimits,
 	): Promise<Organisation> {
-		return this.updateRow(actor, organisationId, limits, 'organisation.limits', 'Updated limits');
+		return this.updateRow(
+			actor,
+			organisationId,
+			limits,
+			'organisation.limits',
+			'Updated limits',
+		);
 	}
 
 	// SA-01: the platform sees facility name, state and status only.

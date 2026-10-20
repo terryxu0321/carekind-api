@@ -1,6 +1,11 @@
 // Tech design §1: authentication sits behind this boundary so a managed identity service can
 // replace the local password + JWT implementation without touching controllers (SOLID D).
-import type { AcceptInviteRequest, LoginRequest, LoginResponse, MeResponse } from '@carekind/shared';
+import type {
+	AcceptInviteRequest,
+	LoginRequest,
+	LoginResponse,
+	MeResponse,
+} from '@carekind/shared';
 import type { Principal } from './principal.js';
 
 export abstract class AuthProvider {

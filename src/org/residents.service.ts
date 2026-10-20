@@ -75,7 +75,12 @@ export class ResidentsService {
 	}
 
 	async get(actor: StaffPrincipal, residentId: Id): Promise<ResidentDetail> {
-		const row = await this.residentAccess.forAction(actor, residentId, 'manage_residents', this.db);
+		const row = await this.residentAccess.forAction(
+			actor,
+			residentId,
+			'manage_residents',
+			this.db,
+		);
 		const events = await this.db
 			.select()
 			.from(residentEvents)
@@ -122,7 +127,12 @@ export class ResidentsService {
 		const transferring = await this.db
 			.select()
 			.from(residents)
-			.where(and(eq(residents.organisationId, organisationId), eq(residents.status, 'transferring')));
+			.where(
+				and(
+					eq(residents.organisationId, organisationId),
+					eq(residents.status, 'transferring'),
+				),
+			);
 		const incoming: ResidentRow[] = [];
 		for (const resident of transferring) {
 			if (resident.facilityId === facilityId) {

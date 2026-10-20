@@ -42,7 +42,8 @@ function summarise(facility: FacilityRow, data: OverviewData): FacilityOverview 
 	const currentStaffIds = new Set(currentStaff.map((member) => member.id));
 	const today = todayIn(facility.timezone);
 	const credentialsDue = data.credentialRows.filter(
-		(row) => currentStaffIds.has(row.staffId) && isCredentialDueWithin60Days(row.expiresAt, today),
+		(row) =>
+			currentStaffIds.has(row.staffId) && isCredentialDueWithin60Days(row.expiresAt, today),
 	);
 	return {
 		facilityId: facility.id,

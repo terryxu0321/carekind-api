@@ -21,7 +21,12 @@ export async function pendingTransferDestination(
 	const [latest] = await executor
 		.select({ toFacilityId: residentEvents.toFacilityId })
 		.from(residentEvents)
-		.where(and(eq(residentEvents.residentId, resident.id), eq(residentEvents.type, 'transfer_out')))
+		.where(
+			and(
+				eq(residentEvents.residentId, resident.id),
+				eq(residentEvents.type, 'transfer_out'),
+			),
+		)
 		.orderBy(desc(residentEvents.createdAt))
 		.limit(1);
 	return latest?.toFacilityId ?? null;
@@ -34,7 +39,10 @@ export class ResidentAccessService {
 			.select()
 			.from(residents)
 			.where(
-				and(eq(residents.id, residentId), eq(residents.organisationId, actor.organisationId)),
+				and(
+					eq(residents.id, residentId),
+					eq(residents.organisationId, actor.organisationId),
+				),
 			);
 		if (row === undefined) {
 			throw notFound('Resident');

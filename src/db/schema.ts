@@ -149,7 +149,9 @@ export const staffAssignments = pgTable(
 		role: facilityRole('role').notNull(),
 		...timestamps,
 	},
-	(table) => [uniqueIndex('staff_assignments_staff_facility').on(table.staffId, table.facilityId)],
+	(table) => [
+		uniqueIndex('staff_assignments_staff_facility').on(table.staffId, table.facilityId),
+	],
 );
 
 export const credentials = pgTable('credentials', {

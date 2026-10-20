@@ -34,9 +34,14 @@ export async function hashPassword(password: string): Promise<string> {
 	const salt = randomBytes(SALT_BYTES);
 	const params = { cost: COST, blockSize: BLOCK_SIZE, parallelism: PARALLELISM };
 	const key = await derive(password, salt, params);
-	return [PREFIX, COST, BLOCK_SIZE, PARALLELISM, salt.toString('base64'), key.toString('base64')].join(
-		'$',
-	);
+	return [
+		PREFIX,
+		COST,
+		BLOCK_SIZE,
+		PARALLELISM,
+		salt.toString('base64'),
+		key.toString('base64'),
+	].join('$');
 }
 
 export async function verifyPassword(password: string, storedHash: string): Promise<boolean> {

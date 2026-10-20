@@ -5,7 +5,6 @@ import {
 	type InviteLinkResponse,
 	type Staff,
 	type StaffAssignment,
-	type StaffCreateRequest,
 	type StaffEvent,
 	type StaffListQuery,
 	type StaffUpdateRequest,
@@ -136,20 +135,25 @@ export class StaffService {
 		return this.db.transaction(async (tx) => {
 			const target = await this.staffAccess.forWrite(actor, staffId, tx);
 			const managed = target.managedFacilityIds;
-			const outside = (item: StaffAssignment): boolean => !isManaged(managed, item.facilityId);
+			const outside = (item: StaffAssignment): boolean =>
+				!isManaged(managed, item.facilityId);
 			const keptOutside = target.assignments.filter(outside);
 			const changesOutside = requested
 				.filter(outside)
 				.some(
 					(item) =>
 						!keptOutside.some(
-							(kept) => kept.facilityId === item.facilityId && kept.role === item.role,
+							(kept) =>
+								kept.facilityId === item.facilityId && kept.role === item.role,
 						),
 				);
 			if (changesOutside) {
 				throw forbidden();
 			}
-			const finalAssignments = [...keptOutside, ...requested.filter((item) => !outside(item))];
+			const finalAssignments = [
+				...keptOutside,
+				...requested.filter((item) => !outside(item)),
+			];
 			await this.checkAssignableFacilities(tx, actor, finalAssignments, null);
 			await this.replaceAssignments(tx, actor.organisationId, staffId, finalAssignments);
 			await this.record(tx, actor, staffId, target.auditFacilityId, {
@@ -216,7 +220,11 @@ export class StaffService {
 		const inOrganisation = eq(staff.organisationId, organisationId);
 		const order = [asc(staff.familyName), asc(staff.givenName)];
 		if (facilityIds === null) {
-			return this.db.select().from(staff).where(inOrganisation).orderBy(...order);
+			return this.db
+				.select()
+				.from(staff)
+				.where(inOrganisation)
+				.orderBy(...order);
 		}
 		const assigned = this.db
 			.select({ staffId: staffAssignments.staffId })

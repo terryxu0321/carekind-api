@@ -31,11 +31,19 @@ describe('cross-organisation access', () => {
 			['GET', `/org/facilities/${facilityId}`],
 			['PATCH', `/org/facilities/${facilityId}`, { name: 'Taken over' }],
 			['GET', `/org/facilities/${facilityId}/go-live`],
-			['PATCH', `/org/facilities/${facilityId}/go-live/items/contract_signed`, { completed: true }],
+			[
+				'PATCH',
+				`/org/facilities/${facilityId}/go-live/items/contract_signed`,
+				{ completed: true },
+			],
 			['POST', `/org/facilities/${facilityId}/go-live/activate`],
 			['GET', `/org/facilities/${facilityId}/workflow-settings`],
 			['GET', `/org/facilities/${facilityId}/residents`],
-			['POST', `/org/facilities/${facilityId}/residents`, { givenName: 'X', familyName: 'Y' }],
+			[
+				'POST',
+				`/org/facilities/${facilityId}/residents`,
+				{ givenName: 'X', familyName: 'Y' },
+			],
 			['GET', `/org/staff?facilityId=${facilityId}`],
 			['GET', `/org/staff/${staffId}`],
 			['PATCH', `/org/staff/${staffId}`, { position: 'Changed' }],
@@ -49,9 +57,17 @@ describe('cross-organisation access', () => {
 			['DELETE', `/org/staff/${staffId}/credentials/${credentialId}`],
 			['GET', `/org/residents/${residentId}`],
 			['PATCH', `/org/residents/${residentId}`, { room: 'Z1' }],
-			['POST', `/org/residents/${residentId}/events`, { type: 'depart', occurredAt: new Date().toISOString() }],
+			[
+				'POST',
+				`/org/residents/${residentId}/events`,
+				{ type: 'depart', occurredAt: new Date().toISOString() },
+			],
 			['GET', `/org/residents/${residentId}/consent`],
-			['PUT', `/org/residents/${residentId}/consent`, { status: 'consented', source: 'self', jurisdiction: 'NSW' }],
+			[
+				'PUT',
+				`/org/residents/${residentId}/consent`,
+				{ status: 'consented', source: 'self', jurisdiction: 'NSW' },
+			],
 		];
 		for (const [method, path, body] of attempts) {
 			const response = await api.raw(method, path, { token: orgBToken, json: body });
@@ -65,11 +81,15 @@ describe('cross-organisation access', () => {
 		const facilities = await client.org.listFacilities();
 		expect(facilities.map((facility) => facility.id)).toEqual([orgBFacility]);
 		const staff = await client.org.listStaff();
-		expect(staff.every((member) => member.organisationId === api.seed.organisations.orgB.id)).toBe(true);
+		expect(
+			staff.every((member) => member.organisationId === api.seed.organisations.orgB.id),
+		).toBe(true);
 		const overview = await client.org.getOverview();
 		expect(overview.map((row) => row.facilityId)).toEqual([orgBFacility]);
 		const audit = await client.org.listAudit();
-		expect(audit.every((entry) => entry.organisationId === api.seed.organisations.orgB.id)).toBe(true);
+		expect(
+			audit.every((entry) => entry.organisationId === api.seed.organisations.orgB.id),
+		).toBe(true);
 	});
 
 	it('should_reject_assigning_staff_to_another_organisations_facility', async () => {
@@ -104,7 +124,9 @@ describe('audiences', () => {
 	it('should_require_a_token', async () => {
 		const response = await api.raw('GET', '/org/facilities');
 		expect(response.status).toBe(401);
-		expect(response.body).toEqual({ error: { code: 'unauthenticated', message: 'Please sign in' } });
+		expect(response.body).toEqual({
+			error: { code: 'unauthenticated', message: 'Please sign in' },
+		});
 	});
 
 	it('should_refuse_org_tokens_on_platform_endpoints', async () => {
@@ -126,7 +148,11 @@ describe('audiences', () => {
 	it('should_not_reveal_whether_an_email_exists', async () => {
 		const client = api.client(null);
 		await expectApiError(
-			client.auth.login({ audience: 'org', email: 'nobody@example.com', password: INCORRECT_LOGIN }),
+			client.auth.login({
+				audience: 'org',
+				email: 'nobody@example.com',
+				password: INCORRECT_LOGIN,
+			}),
 			'unauthenticated',
 		);
 		await expectApiError(

@@ -13,13 +13,15 @@ export interface CsvRecord {
 type RejectedRow = CsvImportResult['rejectedRows'][number];
 
 const MAX_IMPORT_ROWS = 2000;
+// Excel adds a byte order mark when saving "CSV UTF-8".
+export const BYTE_ORDER_MARK = String.fromCharCode(0xfeff);
 
 function parseRows(text: string): string[][] {
 	const rows: string[][] = [];
 	let row: string[] = [];
 	let field = '';
 	let inQuotes = false;
-	const input = text.replace(/^﻿/, '');
+	const input = text.startsWith(BYTE_ORDER_MARK) ? text.slice(1) : text;
 	for (let index = 0; index < input.length; index += 1) {
 		const char = input[index];
 		if (inQuotes) {

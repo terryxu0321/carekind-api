@@ -37,7 +37,10 @@ export class OrgAccessService {
 			.select()
 			.from(facilities)
 			.where(
-				and(eq(facilities.id, facilityId), eq(facilities.organisationId, actor.organisationId)),
+				and(
+					eq(facilities.id, facilityId),
+					eq(facilities.organisationId, actor.organisationId),
+				),
 			);
 		if (row === undefined) {
 			throw notFound('Facility');
@@ -57,8 +60,12 @@ export class OrgAccessService {
 	}
 
 	// Every facility of the caller's organisation where the caller may perform `action`.
-	async facilitiesWith(actor: StaffPrincipal, action: Action): Promise<FacilityRow[]> {
-		const rows = await this.db
+	async facilitiesWith(
+		actor: StaffPrincipal,
+		action: Action,
+		executor: DbExecutor = this.db,
+	): Promise<FacilityRow[]> {
+		const rows = await executor
 			.select()
 			.from(facilities)
 			.where(eq(facilities.organisationId, actor.organisationId))
@@ -67,10 +74,14 @@ export class OrgAccessService {
 	}
 
 	// null = every facility (org admin); used for audit scoping.
-	async facilityIdsWith(actor: StaffPrincipal, action: Action): Promise<Id[] | null> {
+	async facilityIdsWith(
+		actor: StaffPrincipal,
+		action: Action,
+		executor: DbExecutor = this.db,
+	): Promise<Id[] | null> {
 		if (actor.isOrgAdmin && can('org_admin', action)) {
 			return null;
 		}
-		return (await this.facilitiesWith(actor, action)).map((row) => row.id);
+		return (await this.facilitiesWith(actor, action, executor)).map((row) => row.id);
 	}
 }

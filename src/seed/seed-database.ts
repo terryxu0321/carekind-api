@@ -92,7 +92,8 @@ async function insertFacility(
 				key,
 				completedAt: isDone ? now : null,
 				completedBy: isDone ? orgAdminId : null,
-				noticeSentOn: isDone && isNotice ? addDays(today, -(facility.noticeDaysAgo ?? 0)) : null,
+				noticeSentOn:
+					isDone && isNotice ? addDays(today, -(facility.noticeDaysAgo ?? 0)) : null,
 			};
 		}),
 	);
@@ -188,7 +189,10 @@ async function insertResidents(
 	}
 }
 
-async function insertResidentEvents(context: SeedContext, seeded: SeededOrganisation): Promise<void> {
+async function insertResidentEvents(
+	context: SeedContext,
+	seeded: SeededOrganisation,
+): Promise<void> {
 	const { tx, now } = context;
 	for (const event of SYNTHETIC_RESIDENT_EVENTS_A) {
 		await tx.insert(residentEvents).values({
@@ -232,10 +236,20 @@ async function insertOrganisation(
 	const orgAdminId = await insertStaff(context, seeded.id, orgAdmin, {});
 	seeded.staffIds.orgAdmin = orgAdminId;
 	for (const facility of organisation.facilities) {
-		seeded.facilityIds[facility.key] = await insertFacility(context, seeded.id, facility, orgAdminId);
+		seeded.facilityIds[facility.key] = await insertFacility(
+			context,
+			seeded.id,
+			facility,
+			orgAdminId,
+		);
 	}
 	for (const person of organisation.staff.filter((item) => item.key !== 'orgAdmin')) {
-		seeded.staffIds[person.key] = await insertStaff(context, seeded.id, person, seeded.facilityIds);
+		seeded.staffIds[person.key] = await insertStaff(
+			context,
+			seeded.id,
+			person,
+			seeded.facilityIds,
+		);
 	}
 	for (const person of organisation.staff) {
 		if (person.email !== null && SIGNED_IN_LIFECYCLES.has(person.lifecycle)) {
@@ -253,7 +267,12 @@ export async function seedDatabase(
 ): Promise<SeedResult> {
 	const passwordHash = await hashPassword(password);
 	return db.transaction(async (tx) => {
-		const context: SeedContext = { tx, now, today: todayIn('Australia/Sydney', now), passwordHash };
+		const context: SeedContext = {
+			tx,
+			now,
+			today: todayIn('Australia/Sydney', now),
+			passwordHash,
+		};
 		const [admin] = await tx
 			.insert(platformAdmins)
 			.values({ ...SYNTHETIC_PLATFORM_ADMIN, passwordHash })

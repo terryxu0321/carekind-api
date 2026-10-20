@@ -25,7 +25,10 @@ export class CoreModule {
 			providers: [
 				{ provide: DATABASE, useValue: options.db },
 				{ provide: APP_CONFIG, useValue: options.config },
-				{ provide: JwtService, useValue: new JwtService({ secret: options.config.jwtSecret }) },
+				{
+					provide: JwtService,
+					useValue: new JwtService({ secret: options.config.jwtSecret }),
+				},
 				{ provide: AuthProvider, useClass: LocalAuthProvider },
 				{ provide: APP_GUARD, useClass: AuthGuard },
 				AuditService,

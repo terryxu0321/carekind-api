@@ -9,9 +9,20 @@ async function main(): Promise<void> {
 	const config = loadConfig(process.env);
 	const database = await openDatabase(config.databaseDir);
 	const app = await createApp({ db: database.db, config });
-	app.enableShutdownHooks();
 	await app.listen(config.port);
-	new Logger('Main').log(`CareKind API listening on http://localhost:${config.port}`);
+	const logger = new Logger('Main');
+	logger.log(`CareKind API listening on http://localhost:${config.port}`);
+
+	// PGlite keeps the database in a local folder; closing it cleanly on Ctrl+C keeps that folder
+	// readable for the next start (a forced kill can leave it unusable).
+	const shutdown = async (): Promise<void> => {
+		logger.log('Stopping API and closing the database');
+		await app.close();
+		await database.close();
+		process.exit(0);
+	};
+	process.once('SIGINT', () => void shutdown());
+	process.once('SIGTERM', () => void shutdown());
 }
 
 main().catch((error: unknown) => {

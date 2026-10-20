@@ -76,7 +76,10 @@ export class LocalAuthProvider extends AuthProvider {
 				.select()
 				.from(invites)
 				.where(
-					and(eq(invites.tokenHash, hashInviteToken(request.token)), isNull(invites.usedAt)),
+					and(
+						eq(invites.tokenHash, hashInviteToken(request.token)),
+						isNull(invites.usedAt),
+					),
 				);
 			if (invite === undefined || invite.expiresAt.getTime() < Date.now()) {
 				throw inviteInvalid();

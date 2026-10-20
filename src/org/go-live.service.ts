@@ -61,7 +61,11 @@ export class GoLiveService {
 			const facility = await this.access.facilityFor(actor, facilityId, 'manage_go_live', tx);
 			const now = new Date();
 			const completion = body.completed
-				? { completedAt: now, completedBy: actor.staffId, noticeSentOn: body.noticeSentOn ?? null }
+				? {
+						completedAt: now,
+						completedBy: actor.staffId,
+						noticeSentOn: body.noticeSentOn ?? null,
+					}
 				: { completedAt: null, completedBy: null, noticeSentOn: null };
 			await tx
 				.update(goLiveItems)
@@ -90,7 +94,10 @@ export class GoLiveService {
 			const status = await this.statusOf(tx, facility);
 			if (!status.canActivate) {
 				const reasons = status.blockers.map(describeBlocker).join('; ');
-				throw new ApiError('go_live_incomplete', `Go-live checklist is not complete: ${reasons}`);
+				throw new ApiError(
+					'go_live_incomplete',
+					`Go-live checklist is not complete: ${reasons}`,
+				);
 			}
 			const [row] = await tx
 				.update(facilities)

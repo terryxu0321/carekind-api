@@ -27,12 +27,19 @@ export class ConsentService {
 			'manage_consent',
 			this.db,
 		);
-		const [row] = await this.db.select().from(consents).where(eq(consents.residentId, resident.id));
+		const [row] = await this.db
+			.select()
+			.from(consents)
+			.where(eq(consents.residentId, resident.id));
 		return toConsent(resident.id, row);
 	}
 
 	// Takes effect immediately (SPEC-009 M-02d); history is kept in the audit log.
-	async update(actor: StaffPrincipal, residentId: Id, body: ConsentUpdateRequest): Promise<Consent> {
+	async update(
+		actor: StaffPrincipal,
+		residentId: Id,
+		body: ConsentUpdateRequest,
+	): Promise<Consent> {
 		return this.db.transaction(async (tx) => {
 			const resident = await this.residentAccess.forAction(
 				actor,
@@ -55,7 +62,11 @@ export class ConsentService {
 			};
 			const [row] = await tx
 				.insert(consents)
-				.values({ organisationId: actor.organisationId, residentId: resident.id, ...decision })
+				.values({
+					organisationId: actor.organisationId,
+					residentId: resident.id,
+					...decision,
+				})
 				.onConflictDoUpdate({ target: consents.residentId, set: decision })
 				.returning();
 			// The consent status itself stays out of the summary; the row holds it (P-1).

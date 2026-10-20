@@ -46,13 +46,19 @@ export class ResidentEventsService {
 			// The receiving facility accepts a transfer; every other event belongs to the current one.
 			const actingFacility =
 				body.type === 'transfer_accept' ? movement.toFacility : movement.fromFacility;
-			requireFacilityAction(actor, (actingFacility ?? movement.fromFacility).id, 'manage_residents');
+			requireFacilityAction(
+				actor,
+				(actingFacility ?? movement.fromFacility).id,
+				'manage_residents',
+			);
 			const next = nextResidentStatus(resident.status, body.type);
 			if (!next.ok) {
 				throw new ApiError('invalid_transition', next.reason);
 			}
 			const isAccepted = body.type === 'transfer_accept' && movement.toFacility !== null;
-			const homeFacilityId = isAccepted ? (movement.toFacility?.id ?? resident.facilityId) : resident.facilityId;
+			const homeFacilityId = isAccepted
+				? (movement.toFacility?.id ?? resident.facilityId)
+				: resident.facilityId;
 			const [updated] = await tx
 				.update(residents)
 				.set({
@@ -112,12 +118,17 @@ export class ResidentEventsService {
 	): Promise<Movement> {
 		const fromFacility = await this.access.findFacility(actor, resident.facilityId, tx);
 		if (body.type === 'transfer_out') {
-			return { fromFacility, toFacility: await this.transferDestination(tx, actor, resident, body) };
+			return {
+				fromFacility,
+				toFacility: await this.transferDestination(tx, actor, resident, body),
+			};
 		}
 		if (body.type === 'transfer_accept') {
 			const destinationId = await pendingTransferDestination(tx, resident);
 			const toFacility =
-				destinationId === null ? null : await this.access.findFacility(actor, destinationId, tx);
+				destinationId === null
+					? null
+					: await this.access.findFacility(actor, destinationId, tx);
 			return { fromFacility, toFacility };
 		}
 		return { fromFacility, toFacility: null };
@@ -138,7 +149,11 @@ export class ResidentEventsService {
 
 	// Tech design §3: after a transfer is accepted, consent goes back to "unknown" and must be
 	// re-confirmed at the new facility (unknown is treated as not consented, SPEC-009 M-02).
-	private async resetConsent(tx: Transaction, actor: StaffPrincipal, residentId: Id): Promise<void> {
+	private async resetConsent(
+		tx: Transaction,
+		actor: StaffPrincipal,
+		residentId: Id,
+	): Promise<void> {
 		const reset = {
 			status: 'unknown' as const,
 			source: null,

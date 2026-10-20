@@ -29,7 +29,11 @@ export interface TestApi {
 	password: string;
 	login(email: string, audience: AuthAudience): Promise<string>;
 	client(token: string | null): ApiClient;
-	raw(method: string, path: string, options?: { token?: string; json?: unknown }): Promise<RawResponse>;
+	raw(
+		method: string,
+		path: string,
+		options?: { token?: string; json?: unknown },
+	): Promise<RawResponse>;
 	close(): Promise<void>;
 }
 
@@ -80,7 +84,10 @@ export async function startTestApi(): Promise<TestApi> {
 				body: options.json === undefined ? undefined : JSON.stringify(options.json),
 			});
 			const text = await response.text();
-			return { status: response.status, body: text === '' ? null : (JSON.parse(text) as unknown) };
+			return {
+				status: response.status,
+				body: text === '' ? null : (JSON.parse(text) as unknown),
+			};
 		},
 		async close() {
 			await app.close();

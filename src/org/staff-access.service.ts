@@ -37,11 +37,16 @@ export function auditFacilityFor(
 export class StaffAccessService {
 	constructor(private readonly access: OrgAccessService) {}
 
-	managedFacilityIds(actor: StaffPrincipal): Promise<Id[] | null> {
-		return this.access.facilityIdsWith(actor, 'manage_staff');
+	// PGlite has one connection: inside a transaction every query must use that transaction.
+	managedFacilityIds(actor: StaffPrincipal, executor?: DbExecutor): Promise<Id[] | null> {
+		return this.access.facilityIdsWith(actor, 'manage_staff', executor);
 	}
 
-	async forRead(actor: StaffPrincipal, staffId: Id, executor: DbExecutor): Promise<AccessibleStaff> {
+	async forRead(
+		actor: StaffPrincipal,
+		staffId: Id,
+		executor: DbExecutor,
+	): Promise<AccessibleStaff> {
 		const [row] = await executor
 			.select()
 			.from(staff)
@@ -49,7 +54,7 @@ export class StaffAccessService {
 		if (row === undefined) {
 			throw notFound('Staff member');
 		}
-		const managedFacilityIds = await this.managedFacilityIds(actor);
+		const managedFacilityIds = await this.managedFacilityIds(actor, executor);
 		const assignments = await assignmentsOf(executor, row.id);
 		const isVisible =
 			managedFacilityIds === null ||
@@ -65,7 +70,11 @@ export class StaffAccessService {
 		};
 	}
 
-	async forWrite(actor: StaffPrincipal, staffId: Id, executor: DbExecutor): Promise<AccessibleStaff> {
+	async forWrite(
+		actor: StaffPrincipal,
+		staffId: Id,
+		executor: DbExecutor,
+	): Promise<AccessibleStaff> {
 		const target = await this.forRead(actor, staffId, executor);
 		if (target.row.isOrgAdmin && !actor.isOrgAdmin) {
 			throw forbidden();

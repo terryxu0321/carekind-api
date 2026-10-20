@@ -192,7 +192,9 @@ const STAFF_A: SyntheticStaff[] = [
 		email: 'org-a.en1@example.com',
 		lifecycle: 'pending_training',
 		assignments: [{ facility: 'nsw1', role: 'en' }],
-		credentials: [{ kind: 'ahpra_registration', reference: 'NMW0000000003', expiresInDays: -10 }],
+		credentials: [
+			{ kind: 'ahpra_registration', reference: 'NMW0000000003', expiresInDays: -10 },
+		],
 	}),
 	// Multi-facility casual PCW.
 	member('pcw', ['Jordan', 'Pretendo'], 'Personal Care Worker', {
@@ -235,9 +237,33 @@ const STAFF_A: SyntheticStaff[] = [
 ];
 
 const GIVEN_NAMES = [
-	'Alice', 'George', 'Edith', 'Harold', 'Iris', 'Walter', 'Joan', 'Arthur', 'Beryl', 'Frank',
-	'Gwen', 'Leonard', 'Mavis', 'Norman', 'Olive', 'Percy', 'Rita', 'Stanley', 'Thelma', 'Vera',
-	'Wilfred', 'Doris', 'Clifford', 'Hazel', 'Reginald', 'Ivy', 'Bernard',
+	'Alice',
+	'George',
+	'Edith',
+	'Harold',
+	'Iris',
+	'Walter',
+	'Joan',
+	'Arthur',
+	'Beryl',
+	'Frank',
+	'Gwen',
+	'Leonard',
+	'Mavis',
+	'Norman',
+	'Olive',
+	'Percy',
+	'Rita',
+	'Stanley',
+	'Thelma',
+	'Vera',
+	'Wilfred',
+	'Doris',
+	'Clifford',
+	'Hazel',
+	'Reginald',
+	'Ivy',
+	'Bernard',
 ];
 const FAMILY_NAMES = ['Sample', 'Mockton', 'Testwell', 'Fakeley', 'Dummett', 'Pretendo', 'Example'];
 const CONSENT_SOURCES: ConsentSource[] = ['self', 'supporter', 'substitute_decision_maker'];
@@ -256,7 +282,11 @@ function consentFor(index: number): SyntheticResident['consent'] {
 	return { status: 'consented', source: CONSENT_SOURCES[index % 3] ?? 'self' };
 }
 
-function regularResidents(facility: FacilityKey, count: number, offset: number): SyntheticResident[] {
+function regularResidents(
+	facility: FacilityKey,
+	count: number,
+	offset: number,
+): SyntheticResident[] {
 	return Array.from({ length: count }, (_unused, position) => {
 		const index = offset + position;
 		return {
@@ -274,14 +304,86 @@ function regularResidents(facility: FacilityKey, count: number, offset: number):
 
 // Special cases the admin console must handle (SPEC-011 §9): same name, transfers, departures.
 const SPECIAL_RESIDENTS_A: SyntheticResident[] = [
-	{ key: 'sameNameNsw1', facility: 'nsw1', givenName: 'Mary', preferredName: 'Molly', familyName: 'Sample', room: 'NSW1-20', status: 'in_residence', consent: { status: 'consented', source: 'self' } },
-	{ key: 'sameNameNsw2', facility: 'nsw2', givenName: 'Mary', preferredName: null, familyName: 'Sample', room: 'NSW2-20', status: 'in_residence', consent: null },
-	{ key: 'onLeave', facility: 'nsw1', givenName: 'Ernest', preferredName: 'Ernie', familyName: 'Dummett', room: 'NSW1-21', status: 'temporary_leave', consent: { status: 'consented', source: 'supporter' } },
-	{ key: 'preAdmission', facility: 'nsw1', givenName: 'Myrtle', preferredName: null, familyName: 'Example', room: null, status: 'pre_admission', consent: null },
-	{ key: 'transferPending', facility: 'nsw1', givenName: 'Clara', preferredName: null, familyName: 'Mockton', room: 'NSW1-22', status: 'transferring', consent: { status: 'consented', source: 'self' } },
-	{ key: 'transferredFromVic', facility: 'nsw2', givenName: 'Henry', preferredName: null, familyName: 'Fakeley', room: null, status: 'in_residence', consent: { status: 'unknown', source: null } },
-	{ key: 'departed', facility: 'nsw1', givenName: 'Ada', preferredName: null, familyName: 'Pretendo', room: null, status: 'departed', consent: { status: 'consented', source: 'self' } },
-	{ key: 'deceased', facility: 'vic', givenName: 'Otto', preferredName: null, familyName: 'Testwell', room: null, status: 'deceased', consent: { status: 'consented', source: 'substitute_decision_maker' } },
+	{
+		key: 'sameNameNsw1',
+		facility: 'nsw1',
+		givenName: 'Mary',
+		preferredName: 'Molly',
+		familyName: 'Sample',
+		room: 'NSW1-20',
+		status: 'in_residence',
+		consent: { status: 'consented', source: 'self' },
+	},
+	{
+		key: 'sameNameNsw2',
+		facility: 'nsw2',
+		givenName: 'Mary',
+		preferredName: null,
+		familyName: 'Sample',
+		room: 'NSW2-20',
+		status: 'in_residence',
+		consent: null,
+	},
+	{
+		key: 'onLeave',
+		facility: 'nsw1',
+		givenName: 'Ernest',
+		preferredName: 'Ernie',
+		familyName: 'Dummett',
+		room: 'NSW1-21',
+		status: 'temporary_leave',
+		consent: { status: 'consented', source: 'supporter' },
+	},
+	{
+		key: 'preAdmission',
+		facility: 'nsw1',
+		givenName: 'Myrtle',
+		preferredName: null,
+		familyName: 'Example',
+		room: null,
+		status: 'pre_admission',
+		consent: null,
+	},
+	{
+		key: 'transferPending',
+		facility: 'nsw1',
+		givenName: 'Clara',
+		preferredName: null,
+		familyName: 'Mockton',
+		room: 'NSW1-22',
+		status: 'transferring',
+		consent: { status: 'consented', source: 'self' },
+	},
+	{
+		key: 'transferredFromVic',
+		facility: 'nsw2',
+		givenName: 'Henry',
+		preferredName: null,
+		familyName: 'Fakeley',
+		room: null,
+		status: 'in_residence',
+		consent: { status: 'unknown', source: null },
+	},
+	{
+		key: 'departed',
+		facility: 'nsw1',
+		givenName: 'Ada',
+		preferredName: null,
+		familyName: 'Pretendo',
+		room: null,
+		status: 'departed',
+		consent: { status: 'consented', source: 'self' },
+	},
+	{
+		key: 'deceased',
+		facility: 'vic',
+		givenName: 'Otto',
+		preferredName: null,
+		familyName: 'Testwell',
+		room: null,
+		status: 'deceased',
+		consent: { status: 'consented', source: 'substitute_decision_maker' },
+	},
 ];
 
 export interface SyntheticResidentEvent {
@@ -298,7 +400,13 @@ export const SYNTHETIC_RESIDENT_EVENTS_A: SyntheticResidentEvent[] = [
 	{ resident: 'transferPending', type: 'transfer_out', from: 'nsw1', to: 'nsw2', daysAgo: 1 },
 	// Cross-state transfer VIC → NSW, accepted: consent was reset to unknown.
 	{ resident: 'transferredFromVic', type: 'transfer_out', from: 'vic', to: 'nsw2', daysAgo: 12 },
-	{ resident: 'transferredFromVic', type: 'transfer_accept', from: 'vic', to: 'nsw2', daysAgo: 10 },
+	{
+		resident: 'transferredFromVic',
+		type: 'transfer_accept',
+		from: 'vic',
+		to: 'nsw2',
+		daysAgo: 10,
+	},
 	{ resident: 'departed', type: 'depart', from: 'nsw1', to: null, daysAgo: 20 },
 	{ resident: 'deceased', type: 'death', from: 'vic', to: null, daysAgo: 15 },
 ];

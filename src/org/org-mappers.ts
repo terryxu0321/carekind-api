@@ -126,7 +126,10 @@ export function toResidentEvent(row: typeof residentEvents.$inferSelect): Reside
 }
 
 // No consent row means "unknown", treated as not consented (SPEC-009 M-02, PA-03a).
-export function toConsent(residentId: string, row: typeof consents.$inferSelect | undefined): Consent {
+export function toConsent(
+	residentId: string,
+	row: typeof consents.$inferSelect | undefined,
+): Consent {
 	if (row === undefined) {
 		return {
 			residentId,

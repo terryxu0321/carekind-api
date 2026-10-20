@@ -81,7 +81,14 @@ export class CredentialsService {
 			if (row === undefined) {
 				throw notFound('Credential');
 			}
-			await this.record(tx, actor, target, row.id, 'credential.update', 'Updated a credential');
+			await this.record(
+				tx,
+				actor,
+				target,
+				row.id,
+				'credential.update',
+				'Updated a credential',
+			);
 			return present(row);
 		});
 	}
@@ -96,7 +103,14 @@ export class CredentialsService {
 			if (deleted.length === 0) {
 				throw notFound('Credential');
 			}
-			await this.record(tx, actor, target, credentialId, 'credential.delete', 'Removed a credential');
+			await this.record(
+				tx,
+				actor,
+				target,
+				credentialId,
+				'credential.delete',
+				'Removed a credential',
+			);
 		});
 	}
 
